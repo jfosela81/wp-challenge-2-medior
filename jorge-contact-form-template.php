@@ -60,6 +60,15 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST
 <div class="jorge-contact-form-wrapper">
 	<?php echo wp_kses( $display_errors, 'post' ); ?>
 	<form class="jorge-contact-form" action="" method="post">
+
+	<?php
+	$form_fields = wpch2_get_the_form_fields();
+
+	foreach ( $form_fields as $field ) {
+		echo wpch2_render_form_field( $field );
+	}
+	?>
+		<!--
 		<div class="row">
 			<label for="subject">Subject</label>
 			<input type="text" name="subject" id="subject" value="<?php echo isset( $_POST['subject'] ) ? $_POST['subject'] : ''; ?>" />
@@ -72,6 +81,7 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST
 			<label for="message">Message</label>
 			<textarea name="message" id="message"><?php echo isset( $_POST['message'] ) ? $_POST['message'] : ''; ?></textarea>
 		</div>
+-->
 		<div class="row submit">
 			<span></span>
 			<input type="submit" value="Send message" />
