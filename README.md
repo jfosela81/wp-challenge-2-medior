@@ -10,6 +10,7 @@ Simple shortcode for WordPress to add a contact form to your posts or pages
 
 3. You can extend and add more text/textarea fields using "wpch2_form_fields" filter. Example:
 
+```
 add_filter( 'wpch2_form_fields', 'wpch2_add_form_fields' );
 function wpch2_add_form_fields( $fields ) {
 
@@ -21,5 +22,6 @@ function wpch2_add_form_fields( $fields ) {
 
 	return $fields;
 }
+```
 
 4. This shortcode will be processed and show a basic validation. The message will be sent by using wp_mail function.
