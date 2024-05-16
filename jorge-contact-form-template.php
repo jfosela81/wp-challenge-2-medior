@@ -5,26 +5,19 @@
 
 $display_errors = '';
 
+$form_fields = wpch2_get_the_form_fields();
+
 if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST' ) {
 
 	$form_errors = array();
 
-	if ( isset( $_POST['subject'] ) && $_POST['subject'] !== '' ) {
-		$subject = sanitize_text_field( wp_unslash( $_POST['subject'] ) );
-	} else {
-		$form_errors[] = esc_html__( 'Subject is required', 'jorge-contact-form' );
-	}
-
-	if ( isset( $_POST['email'] ) && $_POST['email'] !== '' ) {
-		$email = sanitize_email( wp_unslash( $_POST['email'] ) );
-	} else {
-		$form_errors[] = esc_html__( 'Email is required', 'jorge-contact-form' );
-	}
-
-	if ( isset( $_POST['message'] ) && $_POST['message'] !== '' ) {
-		$message = sanitize_textarea_field( wp_unslash( $_POST['message'] ) );
-	} else {
-		$form_errors[] = esc_html__( 'Message is required', 'jorge-contact-form' );
+	foreach ( $form_fields as $field ) {
+		if ( isset( $_POST[ $field['name'] ] ) && $_POST[ $field['name'] ] !== '' ) {
+			$field_name  = $field['name'];
+			$$field_name = $_POST[ $field['name'] ];
+		} else {
+			$form_errors[] = $field['label'] . ' is required';
+		}
 	}
 
 	if ( empty( $form_errors ) ) {
@@ -32,9 +25,13 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST
 		<html>
 			<body>
 				<h2>You have new message:</h2>
-				<p>Subject: ' . $subject . '</p>
-				<p>Email: ' . $email . '</p>
-				<p>Message: ' . $message . '</p>
+		';
+
+		foreach ( $form_fields as $field ) {
+			$mail_body .= '<p>' . $field['label'] . ': ' . $_POST[ $field['name'] ] . '</p>';
+		}
+
+		$mail_body .= '
 			</body>
 		</html>
 		';
@@ -42,6 +39,24 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST
 		$headers[] = 'Content-Type: text/html; charset=UTF-8';
 
 		echo '<p class="success">' . esc_html__( 'Message sent successfully!', 'jorge-contact-form' ) . '</p>';
+
+		$args['post_type']    = 'wpch2_cf_entries';
+		$args['post_title']   = isset( $subject ) ? $subject : 'no-title';
+		$args['post_content'] = isset( $message ) ? $message : 'no-content';
+
+		$new_entry_id = wp_insert_post( $args );
+
+		if ( $new_entry_id ) {
+			add_post_meta( $new_entry_id, 'email_entry', isset( $email ) ? $email : 'no-email' );
+
+			foreach ( $form_fields as $field ) {
+				if ( in_array( $field['name'], array( 'email', 'subject', 'message' ) ) ) {
+					continue;
+				}
+
+				add_post_meta( $new_entry_id, $field['name'] . '_entry', $_POST[ $field['name'] ] );
+			}
+		}
 
 		wp_mail(
 			'jfosela81+wpchallenge2@gmail.com',
@@ -60,28 +75,15 @@ if ( isset( $_SERVER['REQUEST_METHOD'] ) && $_SERVER['REQUEST_METHOD'] === 'POST
 <div class="jorge-contact-form-wrapper">
 	<?php echo wp_kses( $display_errors, 'post' ); ?>
 	<form class="jorge-contact-form" action="" method="post">
+		<?php
 
-	<?php
-	$form_fields = wpch2_get_the_form_fields();
+		do_action( 'wpch2_before_render_fields' );
+		foreach ( $form_fields as $field ) {
+			echo wpch2_render_form_field( $field );
+		}
+		do_action( 'wpch2_after_render_fields' );
 
-	foreach ( $form_fields as $field ) {
-		echo wpch2_render_form_field( $field );
-	}
-	?>
-		<!--
-		<div class="row">
-			<label for="subject">Subject</label>
-			<input type="text" name="subject" id="subject" value="<?php echo isset( $_POST['subject'] ) ? $_POST['subject'] : ''; ?>" />
-		</div>
-		<div class="row">
-			<label for="email">Email</label>
-			<input type="email" name="email" id="email" value="<?php echo isset( $_POST['email'] ) ? $_POST['email'] : ''; ?>" />
-		</div>
-		<div class="row">
-			<label for="message">Message</label>
-			<textarea name="message" id="message"><?php echo isset( $_POST['message'] ) ? $_POST['message'] : ''; ?></textarea>
-		</div>
--->
+		?>
 		<div class="row submit">
 			<span></span>
 			<input type="submit" value="Send message" />

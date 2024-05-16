@@ -14,5 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once plugin_dir_path( __FILE__ ) . '/hooks/filters/form-fields.php';
+require_once plugin_dir_path( __FILE__ ) . '/hooks/filters/custom-columns-cpt.php';
 require_once plugin_dir_path( __FILE__ ) . '/helpers/render-form-fields.php';
 require_once plugin_dir_path( __FILE__ ) . '/shortcode.php';
+require_once plugin_dir_path( __FILE__ ) . '/contact-form-entries-cpt.php';

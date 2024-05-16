@@ -11,15 +11,15 @@ function wpch2_get_the_form_fields() {
 			'name'  => 'email',
 			'label' => __( 'Email', 'wp-challenge-2-medior' ),
 		),
-		'subject'    => array(
+		'subject' => array(
 			'type'  => 'text',
 			'name'  => 'subject',
-			'label' => __( 'Subject', 'textdomain' ),
+			'label' => __( 'Subject', 'wp-challenge-2-medior' ),
 		),
 		'message' => array(
 			'type'  => 'textarea',
 			'name'  => 'message',
-			'label' => __( 'Message', 'textdomain' ),
+			'label' => __( 'Message', 'wp-challenge-2-medior' ),
 		),
 	);
 

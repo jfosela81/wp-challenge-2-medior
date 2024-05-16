@@ -5,7 +5,7 @@
 
 function wpch2_render_form_field( $field ) {
 
-	$field_value = isset( $_POST['subject'] ) ? $_POST['subject'] : '';
+	$field_value = isset( $_POST[ $field['name'] ] ) ? $_POST[ $field['name'] ] : '';
 
 	switch ( $field['type'] ) {
 		case 'text':
